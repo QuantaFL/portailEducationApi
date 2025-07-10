@@ -4,8 +4,7 @@ namespace Modules\Auth\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Auth\Database\Factories\UserFactory;
-
+use Modules\Auth\Database\Factories\UserFactory;
 class User extends Model
 {
     use HasFactory;
@@ -16,8 +15,8 @@ class User extends Model
    // protected $fillable = [];
     protected $guarded = [];
 
-    // protected static function newFactory(): UserFactory
-    // {
-    //     // return UserFactory::new();
-    // }
+    protected static function newFactory()
+    {
+        return \Modules\Auth\Database\Factories\UserFactory::new();
+    }
 }
