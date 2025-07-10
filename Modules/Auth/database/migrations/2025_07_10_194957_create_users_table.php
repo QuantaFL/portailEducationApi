@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('telephone')->unique()->nullable();
             $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
+            $table->integer("statut")->default(1);
             $table->timestamps();
         });
     }
