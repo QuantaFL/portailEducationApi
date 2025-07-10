@@ -13,10 +13,11 @@ class Role extends Model
     /**
      * The attributes that are mass assignable.
      */
-    protected $fillable = [];
+  //  protected $fillable = [];
 
     // protected static function newFactory(): RoleFactory
     // {
     //     // return RoleFactory::new();
     // }
+    protected $guarded = [];
 }
