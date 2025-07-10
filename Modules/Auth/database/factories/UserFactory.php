@@ -22,8 +22,9 @@ class UserFactory extends Factory
             'mot_de_passe' => bcrypt('passer'),
             'email' => $this->faker->unique()->safeEmail,
             'telephone' => $this->faker->unique()->phoneNumber,
-            'role_id' => Role::pluck('id')->random(),
+            'role_id' => Role::count() ? Role::pluck('id')->random() : 1,
         ];
     }
+
 }
 
