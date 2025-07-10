@@ -5,6 +5,7 @@ namespace Modules\Auth\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\Auth\Models\Role;
 use Modules\Auth\Models\User;
+use Modules\Auth\Database\Factories\UserFactory;
 
 class UserSeeder extends Seeder
 {
@@ -20,7 +21,6 @@ class UserSeeder extends Seeder
             'parent' => 'Parent',
         ];
 
-        // Crée les rôles s'ils n'existent pas
         foreach ($roles as $code => $libelle) {
             Role::firstOrCreate(
                 ['code_role' => $code],
@@ -28,7 +28,6 @@ class UserSeeder extends Seeder
             );
         }
 
-        // Crée un utilisateur par rôle manuellement
         foreach ($roles as $code => $libelle) {
             $role = Role::where('code_role', $code)->first();
 
@@ -43,7 +42,6 @@ class UserSeeder extends Seeder
             );
         }
 
-        // Crée 10 utilisateurs supplémentaires avec la factory (optionnel)
         User::factory(10)->create();
     }
 }
