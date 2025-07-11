@@ -34,6 +34,8 @@ class UserSeeder extends Seeder
             User::firstOrCreate(
                 ['nom_utilisateur' => $code],
                 [
+                    'prenom' => ucfirst($code),
+                    'nom' => strtoupper($code),
                     'email' => $code . '@example.com',
                     'telephone' => '01' . rand(10000000, 99999999),
                     'mot_de_passe' => bcrypt('password'),
