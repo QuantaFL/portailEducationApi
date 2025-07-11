@@ -4,9 +4,32 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Auth\Http\Requests\UserRequest;
+use Modules\Auth\Services\AuthService;
 
 class AuthController extends Controller
 {
+    public function register(UserRequest $request)
+    {
+        $result = (new \Modules\Auth\Services\AuthService)->register($request->validated());
+
+        return response()->json($result, $result['success'] ? 201 : 400);
+
+    }
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'mot_de_passe');
+
+        $result = (new \Modules\Auth\Services\AuthService)->login($credentials);
+
+        return response()->json($result, $result['success'] ? 200 : 401);
+    }
+
+    public function me()
+    {
+        $user = auth()->user();
+        return response()->json($user);
+    }
     /**
      * Display a listing of the resource.
      */
@@ -56,4 +79,5 @@ class AuthController extends Controller
 
         return response()->json([]);
     }
+
 }
