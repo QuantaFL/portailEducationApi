@@ -104,6 +104,9 @@ return [
             explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
+    'aliases' => [
+        'AuthService' => \Modules\Auth\Services\AuthService::class,
+    ],
 
     /*
     |--------------------------------------------------------------------------
