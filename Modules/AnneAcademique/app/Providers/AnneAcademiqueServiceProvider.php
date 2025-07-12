@@ -4,6 +4,7 @@ namespace Modules\AnneAcademique\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Modules\AnneAcademique\app\services\AnneeAcademiqueService;
 use Nwidart\Modules\Traits\PathNamespace;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -36,6 +37,10 @@ class AnneAcademiqueServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
+        $this->app->singleton('annee.academique.service', function () {
+            return new AnneeAcademiqueService();
+        });
+
     }
 
     /**
