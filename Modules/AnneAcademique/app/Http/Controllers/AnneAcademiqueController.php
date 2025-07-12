@@ -41,8 +41,22 @@ class AnneAcademiqueController extends Controller
     public function store(AnneeAcademiqueRequest $request)
     {
         //
+        try {
+            $result = AnneeAcademiqueFacade::createAA($request);
+            return response()->json($result, $result['success'] ? 201 : 400);
+        } catch (\Throwable $e) {
+            Log::error("[$this->controllerName] Erreur lors de la création d'une année academique ", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la création de l’année académique.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
 
-        return response()->json([]);
     }
 
     /**
