@@ -64,9 +64,21 @@ class AnneAcademiqueController extends Controller
      */
     public function show($id)
     {
-        //
-
-        return response()->json([]);
+        try {
+            $result = AnneeAcademiqueFacade::getById($id);
+            return response()->json($result, $result['success'] ? 200 : 404);
+        } catch (\Throwable $e) {
+            Log::error("[$this->controllerName] Erreur lors de la  récupération d'une année academique ", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération de l’année académique.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -75,8 +87,22 @@ class AnneAcademiqueController extends Controller
     public function update(AnneeAcademiqueRequest $request, $id)
     {
         //
+        try {
+            $result = AnneeAcademiqueFacade::updateAA($id, $request);
+            return response()->json($result, $result['success'] ? 200 : 400);
+        } catch (\Throwable $e) {
+            Log::error("[$this->controllerName] Erreur lors de la  mise à jour d'une année academique ", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la mise à jour.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
 
-        return response()->json([]);
     }
 
     /**
@@ -84,8 +110,20 @@ class AnneAcademiqueController extends Controller
      */
     public function destroy($id)
     {
-        //
-
-        return response()->json([]);
+        try {
+            $result = AnneeAcademiqueFacade::deleteAA($id);
+            return response()->json($result, $result['success'] ? 200 : 404);
+        } catch (\Throwable $e) {
+            Log::error("[$this->controllerName] Erreur lors de la  récupération d'une année academique ", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
     }
 }

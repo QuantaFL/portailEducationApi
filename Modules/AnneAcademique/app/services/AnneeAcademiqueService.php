@@ -35,7 +35,7 @@ class AnneeAcademiqueService
             Log::info($this->serviceName. '::updateAA - Tentative de mise à jour', ['id' => $id, 'data' => $request]);
 
             $annee = AnneAcademique::findOrFail($id);
-            $annee->update($request);
+            $annee->update($request->validated());
 
             return [
                 'success' => true,
