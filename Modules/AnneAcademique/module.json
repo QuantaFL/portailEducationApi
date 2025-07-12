@@ -1,0 +1,11 @@
+{
+    "name": "AnneAcademique",
+    "alias": "anneacademique",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\AnneAcademique\\Providers\\AnneAcademiqueServiceProvider"
+    ],
+    "files": []
+}
