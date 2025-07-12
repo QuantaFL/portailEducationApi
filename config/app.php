@@ -106,6 +106,8 @@ return [
     ],
     'aliases' => [
         'AuthService' => \Modules\Auth\Services\AuthService::class,
+        'AnneeAcademique' => Modules\AnneAcademique\Facades\AnneeAcademiqueFacade::class,
+
     ],
 
     /*
