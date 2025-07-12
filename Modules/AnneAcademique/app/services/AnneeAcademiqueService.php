@@ -13,9 +13,9 @@ class AnneeAcademiqueService
     public function createAA(AnneeAcademiqueRequest $request)
     {
         try {
-            $data = $request->validated();
+          //  $data = $request->validated();
 
-            $annee = AnneAcademique::create($data);
+            $annee = AnneAcademique::create($request->validated());
 
             return [
                 'success' => true,
