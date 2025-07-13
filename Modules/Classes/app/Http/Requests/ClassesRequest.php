@@ -12,8 +12,8 @@ class ClassesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nom_classe' => 'required|string|unique:classes,nom_classe',
-            'annee_academique_id' => 'required|exists:anne_academiques,id',
+            'name' => 'required|string|unique:classes,name',
+            'academicYear' => 'required|string',
         ];
     }
 
