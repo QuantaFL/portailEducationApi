@@ -13,7 +13,7 @@ class loginRequest extends FormRequest
     {
         return [
             "email"=>"required|string",
-            "mot_de_passe"=>"required|string",
+            "password"=>"required|string",
         ];
     }
 
