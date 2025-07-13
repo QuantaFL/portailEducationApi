@@ -13,16 +13,11 @@ return new class extends Migration
     {
         Schema::create('etudiants', function (Blueprint $table) {
             $table->id();
-
-        //    $table->foreignId('user_id')->references('id')->on('users')->nullOnDelete();
-
-            $table->date('date_naissance');
-
-
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('identifiant_unique_portail')->unique();
-            $table->foreignId('classe_id')->constrained('classes');
-
+            $table->date('enrollment_date');
+            $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
+            $table->foreignId('parent_user_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->string('student_id_number')->unique();
             $table->timestamps();
         });
     }

@@ -36,10 +36,10 @@ class EtudiantServiceProvider extends ServiceProvider
     {
         $this->app->register(EventServiceProvider::class);
         $this->app->register(RouteServiceProvider::class);
-        $this->app->singleton('etudiant_service', function () {
-            return new  \Modules\Etudiant\app\Services\EtudiantService();
-        });
 
+        $this->app->bind('etudiant_service', function ($app) {
+            return new \Modules\Etudiant\Services\EtudiantService();
+        });
     }
 
     /**

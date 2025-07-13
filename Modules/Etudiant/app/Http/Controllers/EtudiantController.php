@@ -3,16 +3,18 @@
 namespace Modules\Etudiant\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use http\Env\Response;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Modules\Etudiant\Facades\EtudiantFacade;
 use Modules\Etudiant\Http\Requests\EtudiantRequest;
+use Modules\Etudiant\Services\EtudiantService;
 
 class EtudiantController extends Controller
 {
-    private $controllerName = 'EtudiantController';
+    protected $etudiantService;
+
+    public function __construct(EtudiantService $etudiantService)
+    {
+        $this->etudiantService = $etudiantService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -20,22 +22,11 @@ class EtudiantController extends Controller
     public function index()
     {
         try {
-            $etudiants = EtudiantFacade::getAllStudent();
-            return response()->json([
-                'message' =>'liste des etudiants chargés',
-                'etudiants'=>$etudiants
-            ]);
-
-        }catch (\Exception $e) {
-            Log::error("[$this->controllerName] Erreur lors de l'ajout d'un étudiant", [
-                'exception' => $e,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            //   Log::error($e->getMessage());
-            return response()->json(['message' => $e->getMessage()], 500);
+            $etudiants = $this->etudiantService->getAllEtudiants();
+            return response()->json($etudiants);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error fetching students', 'error' => $e->getMessage()], 500);
         }
-
     }
 
     /**
@@ -44,93 +35,43 @@ class EtudiantController extends Controller
     public function store(EtudiantRequest $request)
     {
         try {
-            Log::info("entry controller ");
-            $result = EtudiantFacade::createStd($request->validated());
-
-            return response()->json([
-                'message' => 'Étudiant inscrit avec succès.',
-                'data' => [
-                    'token' => $result['token'],
-                    // 'token_type' => 'bearer',
-                    // 'expires_in' => auth('api')->factory()->getTTL() * 60,
-                    'user' => $result['user'],
-                    'etudiant' => $result['etudiant'],
-                ]
-            ], 201);
-        }catch (\Exception $e) {
-            Log::error("[$this->controllerName] Erreur lors de l'ajout d'un étudiant", [
-                'exception' => $e,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            //   Log::error($e->getMessage());
-            return response()->json(['message' => $e->getMessage()], 500);
+            $etudiant = $this->etudiantService->createEtudiant($request->validated());
+            return response()->json($etudiant, 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error creating student', 'error' => $e->getMessage()], 500);
         }
-
     }
 
     /**
-     * Show the specified resource.
+     * Display the specified resource.
      */
     public function show($id)
     {
         try {
-            $etudiant = EtudiantFacade::getStudentById($id);
-            return response()->json(
-                [
-                    "message"=>"etudiant retouvé",
-                    "etudiant"=>$etudiant
-                ]
-            );
-        } catch (ModelNotFoundException $e) {
-            Log::warning("[$this->controllerName] Étudiant non trouvé", [
-                'id' => $id,
-                'message' => $e->getMessage(),
-            ]);
-            return response()->json(['message' => "Étudiant introuvable."], 404);
+            $etudiant = $this->etudiantService->getEtudiantById($id);
+            if (!$etudiant) {
+                return response()->json(['message' => 'Student not found'], 404);
+            }
+            return response()->json($etudiant);
         } catch (\Exception $e) {
-            Log::error("[$this->controllerName] Erreur lors de la récupération de l'étudiant", [
-                'exception' => $e,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json(['message' => "Erreur interne du serveur."], 500);
+            return response()->json(['message' => 'Error fetching student', 'error' => $e->getMessage()], 500);
         }
-
-
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(EtudiantRequest $request, $user_id)
+    public function update(EtudiantRequest $request, $id)
     {
         try {
-            $result = EtudiantFacade::updateStudent($request->validated(), $user_id);
-            return response()->json(
-                [
-                    "message"=>"etudiant mis à jour ",
-                    "etudiant"=>$result
-                ]
-            );
+            $etudiant = $this->etudiantService->updateEtudiant($id, $request->validated());
+            if (!$etudiant) {
+                return response()->json(['message' => 'Student not found'], 404);
+            }
+            return response()->json($etudiant);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error updating student', 'error' => $e->getMessage()], 500);
         }
-        catch (ModelNotFoundException $e) {
-            Log::warning("[$this->controllerName] utilisateur avec le profil etudiant  non trouvé", [
-                'id utilisateur' => $user_id,
-                'message' => $e->getMessage(),
-            ]);
-            return response()->json(['message' => "Étudiant introuvable. utilisateur id  : {$user_id}"], 404);
-        }
-
-        catch (\Exception $e) {
-            Log::error("[$this->controllerName] Erreur lors de la récupération de l'étudiant", [
-                'exception' => $e,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return response()->json(['message' => "Erreur interne du serveur."], 500);
-        }
-
     }
 
     /**
@@ -138,8 +79,14 @@ class EtudiantController extends Controller
      */
     public function destroy($id)
     {
-        //
-
-        return response()->json([]);
+        try {
+            $deleted = $this->etudiantService->deleteEtudiant($id);
+            if (!$deleted) {
+                return response()->json(['message' => 'Student not found'], 404);
+            }
+            return response()->json(['message' => 'Student deleted successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error deleting student', 'error' => $e->getMessage()], 500);
+        }
     }
 }

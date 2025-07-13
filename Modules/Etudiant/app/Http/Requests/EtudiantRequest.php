@@ -12,15 +12,18 @@ class EtudiantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nom' => ['required', 'string', 'max:255'],
-            'prenom' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email'],
-            'telephone' => ['required', 'string', 'max:20'],
-            'role_id' => ['required', 'exists:roles,id'],
-
-            // Champs pour Etudiant
-            'date_naissance' => ['required', 'date'],
-            'classe_id' => ['required', 'exists:classes,id'],
+            'enrollmentDate' => 'required|date',
+            'classId' => 'required|exists:classes,id',
+            'firstName' => 'required|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'phone' => 'nullable|string|max:20',
+            //'password' => 'required|string|min:8',
+            'roleId' => 'required|exists:roles,id',
+            'address' => 'nullable|string|max:255',
+            'dateOfBirth' => 'nullable|date',
+            'gender' => 'nullable|string|in:Male,Female,Other',
+            'parentUserId' => 'nullable|exists:users,id',
         ];
     }
 
