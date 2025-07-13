@@ -14,7 +14,7 @@ class EtudiantRequest extends FormRequest
         return [
             'nom' => ['required', 'string', 'max:255'],
             'prenom' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'unique:users,email'],
+            'email' => ['required', 'email'],
             'telephone' => ['required', 'string', 'max:20'],
             'role_id' => ['required', 'exists:roles,id'],
 

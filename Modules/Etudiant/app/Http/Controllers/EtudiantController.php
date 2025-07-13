@@ -103,11 +103,34 @@ class EtudiantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(EtudiantRequest $request, $user_id)
     {
-        //
+        try {
+            $result = EtudiantFacade::updateStudent($request->validated(), $user_id);
+            return response()->json(
+                [
+                    "message"=>"etudiant mis à jour ",
+                    "etudiant"=>$result
+                ]
+            );
+        }
+        catch (ModelNotFoundException $e) {
+            Log::warning("[$this->controllerName] utilisateur avec le profil etudiant  non trouvé", [
+                'id utilisateur' => $user_id,
+                'message' => $e->getMessage(),
+            ]);
+            return response()->json(['message' => "Étudiant introuvable. utilisateur id  : {$user_id}"], 404);
+        }
 
-        return response()->json([]);
+        catch (\Exception $e) {
+            Log::error("[$this->controllerName] Erreur lors de la récupération de l'étudiant", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['message' => "Erreur interne du serveur."], 500);
+        }
+
     }
 
     /**
