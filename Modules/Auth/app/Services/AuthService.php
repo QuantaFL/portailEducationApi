@@ -20,7 +20,6 @@ class AuthService
         try {
             Log::info('Register attempt', $data);
 
-            //$data['mot_de_passe'] = Hash::make('password');
             $user = User::create($data);
 
             return [
@@ -43,7 +42,7 @@ class AuthService
 
             $user = User::where('email', $credentials['email'])->first();
 
-            if (!$user || !Hash::check($credentials['mot_de_passe'], $user->mot_de_passe)) {
+            if (!$user || !Hash::check($credentials['password'], $user->password)) {
                 return [
                     'success' => false,
                     'message' => 'Identifiants invalides.',
