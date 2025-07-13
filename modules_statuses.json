@@ -1,3 +1,6 @@
 {
-    "Auth": true
+    "Auth": true,
+    "AnneAcademique": true,
+    "Etudiant": true,
+    "Classes": true
 }

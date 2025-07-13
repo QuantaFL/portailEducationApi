@@ -5,9 +5,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Auth\Database\Factories\UserFactory;
+use Modules\Etudiant\Models\Etudiant;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-abstract class User extends Authenticatable implements JWTSubject
+ class User extends Authenticatable implements JWTSubject
 {
     use HasFactory;
 
@@ -39,4 +40,8 @@ abstract class User extends Authenticatable implements JWTSubject
             'statut'          => $this->statut,
         ];
     }
+     public function etudiant()
+     {
+         return $this->hasOne(Etudiant::class);
+     }
 }

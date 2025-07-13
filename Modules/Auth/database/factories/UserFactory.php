@@ -20,8 +20,8 @@ class UserFactory extends Factory
         return [
             'prenom' => $this->faker->firstName,
             'nom' => $this->faker->lastName,
-            'nom_utilisateur' => $this->faker->unique()->userName,
-            'mot_de_passe' => bcrypt('passer'),
+          //  'nom_utilisateur' => $this->faker->unique()->userName,
+          //  'mot_de_passe' => bcrypt('passer'),
             'email' => $this->faker->unique()->safeEmail,
             'telephone' => $this->faker->unique()->phoneNumber,
             'role_id' => Role::count() ? Role::pluck('id')->random() : 1,

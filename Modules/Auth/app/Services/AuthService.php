@@ -20,7 +20,7 @@ class AuthService
         try {
             Log::info('Register attempt', $data);
 
-            $data['mot_de_passe'] = Hash::make('password');
+            //$data['mot_de_passe'] = Hash::make('password');
             $user = User::create($data);
 
             return [

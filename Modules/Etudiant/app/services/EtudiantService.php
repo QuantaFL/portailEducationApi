@@ -5,6 +5,7 @@ namespace Modules\Etudiant\app\services;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Modules\Auth\Models\User;
+use Modules\Etudiant\Models\Etudiant;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class EtudiantService
@@ -68,7 +69,7 @@ class EtudiantService
             ];
 
         } catch (\Exception $e) {
-            Log::error("[$this->ServiceName] Erreur lors du chargement des années académiques", [
+            Log::error("[$this->ServiceName] Erreur lors de la creation d'un etudiant", [
                 'exception' => $e,
                 'message' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -76,5 +77,21 @@ class EtudiantService
             throw $e;
         }
     }
+    public function getAllStudent()
+    {
+        try {
+            $etudiants = Etudiant::with(['user', 'classe'])->get();
+            return $etudiants;
+
+        }catch (\Exception $e) {
+            Log::error("[$this->ServiceName] Erreur lors du chargement des étudiants", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
+    }
+
 
 }

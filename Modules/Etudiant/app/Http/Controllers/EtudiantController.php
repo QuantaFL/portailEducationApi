@@ -17,9 +17,23 @@ class EtudiantController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $etudiants = EtudiantFacade::getAllStudent();
+            return response()->json([
+                'message' =>'liste des etudiants chargés',
+                'etudiants'=>$etudiants
+            ]);
 
-        return response()->json([]);
+        }catch (\Exception $e) {
+            Log::error("[$this->controllerName] Erreur lors de l'ajout d'un étudiant", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            //   Log::error($e->getMessage());
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+
     }
 
     /**

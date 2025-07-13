@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('nom_utilisateur')->unique();
+          //  $table->string('nom_utilisateur')->unique();
             $table->string('prenom')->nullable(false);
             $table->string('nom')->nullable(false);
-            $table->string('mot_de_passe');
+         //   $table->string('mot_de_passe');
             $table->string('email')->unique()->nullable();
             $table->string('telephone')->unique()->nullable();
             $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');

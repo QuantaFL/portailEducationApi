@@ -32,13 +32,13 @@ class UserSeeder extends Seeder
             $role = Role::where('code_role', $code)->first();
 
             User::firstOrCreate(
-                ['nom_utilisateur' => $code],
+               // ['nom_utilisateur' => $code],
                 [
                     'prenom' => ucfirst($code),
                     'nom' => strtoupper($code),
                     'email' => $code . '@example.com',
                     'telephone' => '01' . rand(10000000, 99999999),
-                    'mot_de_passe' => bcrypt('password'),
+                  //  'mot_de_passe' => bcrypt('password'),
                     'role_id' => $role->id,
                 ]
             );
