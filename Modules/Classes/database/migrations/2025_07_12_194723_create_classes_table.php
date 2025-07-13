@@ -13,12 +13,8 @@ return new class extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
-            $table->string('nom_classe')->nullable(false)->unique(true);
-            $table->unsignedBigInteger('annee_academique_id');
-            $table->foreign('annee_academique_id')
-                ->references('id')
-                ->on('anne_academiques')
-                ->onDelete('cascade');
+            $table->string('name')->unique();
+            $table->string('academic_year');
             $table->timestamps();
         });
     }
