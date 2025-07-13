@@ -2,6 +2,7 @@
 
 namespace Modules\Etudiant\Services;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Modules\Auth\Models\User;
 use Modules\Etudiant\Models\Etudiant;
@@ -52,14 +53,15 @@ class EtudiantService
     public function updateEtudiant($id, array $data)
     {
         return DB::transaction(function () use ($id, $data) {
-            $etudiant = Etudiant::find($id);
+            $etudiant = Etudiant::findOrFail($id);
 
-            if (!$etudiant) {
+            if ($etudiant===null) {
+                Log::error('Etudiant not found with id '.$id);
                 return null;
             }
+            Log::info('Etudiant found with id '.$id);;
 
             $etudiant->update([
-                'enrollment_date' => $data['enrollmentDate'] ?? $etudiant->enrollmentDate,
                 'class_id' => $data['classId'] ?? $etudiant->classId,
                 'parent_user_id' => $data['parentUserId'] ?? $etudiant->parentUserId,
             ]);
@@ -70,7 +72,7 @@ class EtudiantService
                     'last_name' => $data['lastName'] ?? $etudiant->user->lastName,
                     'email' => $data['email'] ?? $etudiant->user->email,
                     'phone' => $data['phone'] ?? $etudiant->user->phone,
-                    'password' => isset($data['password']) ? Hash::make($data['password']) : $etudiant->user->password,
+                 //   'password' => isset($data['password']) ? Hash::make($data['password']) : $etudiant->user->password,
                     'role_id' => $data['roleId'] ?? $etudiant->user->roleId,
                     'address' => $data['address'] ?? $etudiant->user->address,
                     'date_of_birth' => $data['dateOfBirth'] ?? $etudiant->user->dateOfBirth,
