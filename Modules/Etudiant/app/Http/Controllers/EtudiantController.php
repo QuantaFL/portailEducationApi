@@ -5,6 +5,7 @@ namespace Modules\Etudiant\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\Etudiant\Http\Requests\EtudiantRequest;
+use Modules\Etudiant\Http\Requests\UpdateEtudiantRequest;
 use Modules\Etudiant\Services\EtudiantService;
 
 class EtudiantController extends Controller
@@ -61,7 +62,7 @@ class EtudiantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(EtudiantRequest $request, $id)
+    public function update(UpdateEtudiantRequest $request, $id)
     {
         try {
             $etudiant = $this->etudiantService->updateEtudiant($id, $request->validated());
