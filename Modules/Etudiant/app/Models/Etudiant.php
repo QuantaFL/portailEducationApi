@@ -18,6 +18,7 @@ class Etudiant extends Model
      */
    // protected $fillable = [];
     protected $guarded = [];
+    protected $with = ['user', 'classe'];
 
     // protected static function newFactory(): EtudiantFactory
     // {
