@@ -4,7 +4,7 @@ namespace Modules\Classes\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-// use Modules\Classes\Database\Factories\ClassesFactory;
+use Modules\Classes\Database\Factories\ClassesFactory;
 
 class Classes extends Model
 {
@@ -13,11 +13,18 @@ class Classes extends Model
     /**
      * The attributes that are mass assignable.
      */
-   // protected $fillable = [];
+   /*
+    *  protected $fillable = [
+        'name',
+        'academic_year',
+        'created_at',
+        'updated_at',
+    ];
+    * */
     protected $guarded = [];
 
-    // protected static function newFactory(): ClassesFactory
-    // {
-    //     // return ClassesFactory::new();
-    // }
+    protected static function newFactory(): ClassesFactory
+    {
+        return ClassesFactory::new();
+    }
 }
