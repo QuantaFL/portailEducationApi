@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Modules\Auth\Models\Role;
 use Modules\Auth\Models\User;
 use Modules\Auth\Database\Factories\UserFactory;
+use Faker\Factory as Faker;
 
 class UserSeeder extends Seeder
 {
@@ -14,6 +15,7 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = Faker::create();
         $roles = [
             'admin' => 'Administrateur',
             'enseignant' => 'Enseignant',
@@ -32,13 +34,15 @@ class UserSeeder extends Seeder
             $role = Role::where('code_role', $code)->first();
 
             User::firstOrCreate(
-               // ['nom_utilisateur' => $code],
                 [
-                    'prenom' => ucfirst($code),
-                    'nom' => strtoupper($code),
+                    'first_name' => ucfirst($code),
+                    'last_name' => strtoupper($code),
                     'email' => $code . '@example.com',
-                    'telephone' => '01' . rand(10000000, 99999999),
-                  //  'mot_de_passe' => bcrypt('password'),
+                    'phone' => '01' . rand(10000000, 99999999),
+                    'date_of_birth' => now()->subYears(rand(18, 60))->format('Y-m-d'),
+                    'gender' => $code === 'admin' ? 'Male' : 'Female',
+                    'address' => $faker->address,
+                    'password' => bcrypt('password'),
                     'role_id' => $role->id,
                 ]
             );
