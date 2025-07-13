@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('code_role')->unique()->nullable();
             $table->string('libelle_role')->unique()->nullable();
-            $table->integer("statut")->default(1);
+            $table->integer("status")->default(1);
             $table->timestamps();
         });
     }
