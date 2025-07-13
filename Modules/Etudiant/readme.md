@@ -1,0 +1,12 @@
+"enrollmentDate": "2024-09-01",
+"classId": 1,
+"firstName": "JohnX",
+"lastName": "Doex",
+"email": "12.doe@example.com",
+"phone": "233-45-891",
+//"password": "secure_password",
+"roleId": 1,
+"address": "123 Main St",
+"dateOfBirth": "2010-01-01",
+"gender": "Male",
+"parentUserId":1
