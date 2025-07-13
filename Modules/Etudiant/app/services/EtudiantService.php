@@ -92,6 +92,18 @@ class EtudiantService
             throw $e;
         }
     }
+    public function getStudentById(int $id){
+        try {
+            return Etudiant::findOrFail($id);
+        }catch (\Exception $e) {
+            Log::error("[$this->ServiceName] Erreur lors du chargement des étudiants", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            throw $e;
+        }
+    }
 
 
 }
