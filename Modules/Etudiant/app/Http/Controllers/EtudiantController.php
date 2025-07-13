@@ -3,6 +3,8 @@
 namespace Modules\Etudiant\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use http\Env\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Modules\Etudiant\Facades\EtudiantFacade;
@@ -72,9 +74,30 @@ class EtudiantController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $etudiant = EtudiantFacade::getStudentById($id);
+            return response()->json(
+                [
+                    "message"=>"etudiant retouvé",
+                    "etudiant"=>$etudiant
+                ]
+            );
+        } catch (ModelNotFoundException $e) {
+            Log::warning("[$this->controllerName] Étudiant non trouvé", [
+                'id' => $id,
+                'message' => $e->getMessage(),
+            ]);
+            return response()->json(['message' => "Étudiant introuvable."], 404);
+        } catch (\Exception $e) {
+            Log::error("[$this->controllerName] Erreur lors de la récupération de l'étudiant", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return response()->json(['message' => "Erreur interne du serveur."], 500);
+        }
 
-        return response()->json([]);
+
     }
 
     /**
