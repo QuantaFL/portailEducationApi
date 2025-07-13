@@ -31,13 +31,12 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
     public function getJWTCustomClaims()
     {
         return [
-            'nom_utilisateur' => $this->nom_utilisateur,
-            'prenom'          => $this->prenom,
-            'nom'             => $this->nom,
+            'first_name'          => $this->first_name,
+            'last_name'             => $this->last_name,
             'email'           => $this->email,
-            'telephone'       => $this->telephone,
+            'phone'       => $this->phone,
             'role_id'         => $this->role_id,
-            'statut'          => $this->statut,
+            'status'          => $this->status,
         ];
     }
      public function etudiant()
