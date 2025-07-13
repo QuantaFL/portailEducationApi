@@ -12,11 +12,13 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'prenom' => 'required|string',
-            'nom' => 'required|string',
-         //   'nom_utilisateur' => 'required|string|unique:users,nom_utilisateur',
-          //  'mot_de_passe' => 'required|string|min:8',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
             'email' => 'nullable|email|unique:users,email',
+            'phone' => 'nullable|string|unique:users,phone',
+            'date_of_birth' => 'nullable|date',
+            'gender' => 'nullable|string',
+            'address' => 'nullable|string',
             'role_id' => 'required|exists:roles,id',
         ];
     }
@@ -31,16 +33,16 @@ class UserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'prenom.required' => 'Le prénom est obligatoire.',
-            'nom.required' => 'Le nom est obligatoire.',
-           // 'nom_utilisateur.required' => 'Le nom d’utilisateur est obligatoire.',
-           // 'nom_utilisateur.unique' => 'Ce nom d’utilisateur est déjà utilisé.',
-            //'mot_de_passe.required' => 'Le mot de passe est obligatoire.',
-            //'mot_de_passe.min' => 'Le mot de passe doit contenir au moins 8 caractères.',
-            'email.email' => 'Le champ email doit être une adresse email valide.',
-            'email.unique' => 'Cet email est déjà utilisé.',
-            'role_id.required' => 'Le rôle est obligatoire.',
-            'role_id.exists' => 'Le rôle sélectionné est invalide.',
+            'first_name.required' => 'The first name is required.',
+            'last_name.required' => 'The last name is required.',
+            'email.email' => 'The email field must be a valid email address.',
+            'email.unique' => 'This email is already in use.',
+            'phone.unique' => 'This phone number is already in use.',
+            'date_of_birth.date' => 'The date of birth must be a valid date.',
+            'gender.string' => 'The gender must be a string.',
+            'address.string' => 'The address must be a string.',
+            'role_id.required' => 'The role is required.',
+            'role_id.exists' => 'The selected role is invalid.',
         ];
     }
 }
