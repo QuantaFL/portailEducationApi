@@ -16,7 +16,10 @@ class ClassesService
         try {
             Log::info($this->serviceName . '::createClasse - Tentative de création', ['data' => $request->validated()]);
 
-            $classe = Classes::create($request->validated());
+            $classe = Classes::create([
+                "name"=>$request['name'],
+                "academic_year"=>$request['academicYear'],
+            ]);
 
             return [
                 'success' => true,
