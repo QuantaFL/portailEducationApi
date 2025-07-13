@@ -3,6 +3,7 @@
 namespace Modules\Classes\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Modules\Classes\Http\facades\ClassesFacade;
@@ -43,7 +44,8 @@ private $controllerName = "ClassesController";
         try {
             $result = ClassesFacade::createClasse($request);
             return response()->json($result, $result['success'] ? 201 : 400);
-        } catch (\Throwable $e) {
+        }
+        catch (\Throwable $e) {
             Log::error($this->controllerName ."Erreur lors de la création d'une classe", [
                 'exception' => $e,
                 'message' => $e->getMessage(),
@@ -67,7 +69,21 @@ private $controllerName = "ClassesController";
         try {
             $result = ClassesFacade::getById($id);
             return response()->json($result, $result['success'] ? 200 : 404);
-        } catch (\Throwable $e) {
+        }
+        catch (ModelNotFoundException $e) {
+            Log::warning($this->controllerName . " | Classe non trouvée", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ressource non trouvée.',
+                'error' => $e->getMessage()
+            ], 404);
+
+        }
+        catch (\Throwable $e) {
             Log::error("[$this->controllerName] Erreur lors de la récupération d'une classe", [
                 'exception' => $e,
                 'message' => $e->getMessage(),
@@ -84,12 +100,26 @@ private $controllerName = "ClassesController";
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(ClassesRequest $request, $id)
     {
         try {
             $result = ClassesFacade::updateClasse($id, $request);
             return response()->json($result, $result['success'] ? 200 : 400);
-        } catch (\Throwable $e) {
+        }
+        catch (ModelNotFoundException $e) {
+            Log::warning($this->controllerName . " | Classe non trouvée", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ressource non trouvée.',
+                'error' => $e->getMessage()
+            ], 404);
+
+        }
+        catch (\Throwable $e) {
             Log::error("[$this->controllerName] Erreur lors de la mise à jour d'une classe", [
                 'exception' => $e,
                 'message' => $e->getMessage(),
@@ -113,7 +143,21 @@ private $controllerName = "ClassesController";
         try {
             $result = ClassesFacade::deleteClasse($id);
             return response()->json($result, $result['success'] ? 200 : 404);
-        } catch (\Throwable $e) {
+        }
+        catch (ModelNotFoundException $e) {
+            Log::warning($this->controllerName . " | Classe non trouvée", [
+                'exception' => $e,
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Ressource non trouvée.',
+                'error' => $e->getMessage()
+            ], 404);
+
+        }
+        catch (\Throwable $e) {
             Log::error("[$this->controllerName] Erreur lors de la suppression d'une classe", [
                 'exception' => $e,
                 'message' => $e->getMessage(),
