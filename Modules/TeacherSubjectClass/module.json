@@ -1,0 +1,11 @@
+{
+    "name": "TeacherSubjectClass",
+    "alias": "teachersubjectclass",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\TeacherSubjectClass\\Providers\\TeacherSubjectClassServiceProvider"
+    ],
+    "files": []
+}
