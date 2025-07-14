@@ -30,7 +30,7 @@
             "Modules\\Auth\\": "Modules/Auth/app/",
             "Modules\\Etudiant\\": "Modules/Etudiant/app",
             "Modules\\Classes\\": "Modules/Classes/app",
-            "Modules\\Enseignant\\": "Modules/Enseignant/app"
+            "Modules\\Teacher\\": "Modules/Teacher/app"
         }
     },
     "autoload-dev": {
