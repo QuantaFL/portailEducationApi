@@ -43,4 +43,8 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
      {
          return $this->hasOne(Etudiant::class);
      }
+     public function role()
+     {
+         return $this->belongsTo(Role::class);
+     }
 }
