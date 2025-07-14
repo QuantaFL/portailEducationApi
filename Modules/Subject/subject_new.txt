@@ -1,0 +1,9 @@
+Changes made by Gemini to the Subject module:
+
+- Created SubjectController (Modules/Subject/Http/Controllers/SubjectController.php) with CRUD operations and API responses.
+- Created SubjectRequest (Modules/Subject/Http/Requests/SubjectRequest.php) with validation rules for name, coefficient, and level.
+- Created SubjectService (Modules/Subject/Services/SubjectService.php) with methods for creating, updating, deleting, listing, and retrieving subjects, including logging.
+- Updated Subject model (Modules/Subject/Entities/Subject.php) to include fillable fields.
+- Created and modified create_subjects_table migration (Modules/Subject/database/migrations/*_create_subjects_table.php) to include name, coefficient, and level fields.
+- Implemented 409 HTTP code for duplicate name during create/update in SubjectController.
+- Implemented proper error handling (422, 404, 500) in SubjectController.
