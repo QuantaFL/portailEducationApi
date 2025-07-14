@@ -108,7 +108,7 @@ return [
         'AuthService' => \Modules\Auth\Services\AuthService::class,
         'AnneeAcademique' => Modules\AnneAcademique\Facades\AnneeAcademiqueFacade::class,
         'EtudiantFacade'=> Modules\Etudiant\Facades\EtudiantFacade::class,
-
+        'TeacherFacade' => Modules\Teacher\app\Facades\TeacherFacade::class,
 
     ],
 
