@@ -22,6 +22,8 @@ class StoreParentRequest extends FormRequest
             'gender' => 'nullable|string|in:Male,Female,Other',
             'student_id' => 'required|exists:etudiants,id',
             'phone_number' => 'nullable|string|max:20',
+            'role_id' => 'required|exists:roles,id',
+
         ];
     }
 
