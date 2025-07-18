@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Modules\ParentModule\app\services\ParentService;
 use Modules\ParentModule\Http\Requests\StoreParentRequest;
-use Modules\ParentModule\Exceptions\ParentException;
+use Modules\ParentModule\Exceptions\ParentConflictException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class ParentController extends Controller
 {
@@ -32,11 +34,31 @@ class ParentController extends Controller
     {
         try {
             $parent = $this->parentService->createParent($request->validated());
-            return response()->json($parent, 201);
-        } catch (ParentException $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
-        } catch (\Throwable $e) {
-            return response()->json(['message' => 'An unexpected error occurred.'], 500);
+            return response()->json(['status' => 'success', 'data' => $parent, 'code' => 201], 201);
+        } catch (ValidationException $e) {
+            Log::warning('Parent creation validation failed.', ['errors' => $e->errors()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+                'code' => 400
+            ], 400);
+        } catch (ParentConflictException $e) {
+            Log::warning('Parent creation conflict.', ['message' => $e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'errors' => [],
+                'code' => 409
+            ], 409);
+        }  catch (\Throwable $e) {
+            Log::error('An unexpected error occurred during parent creation: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An unexpected error occurred.',
+                'errors' => [],
+                'code' => 500
+            ], 500);
         }
     }
 
