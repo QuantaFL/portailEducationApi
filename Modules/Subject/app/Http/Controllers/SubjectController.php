@@ -57,18 +57,13 @@ class SubjectController extends Controller
     {
         try {
             $subject = $this->subjectService->getSubjectById($id);
-            if (!$subject) {
-                return response()->json(['message' => 'Subject not found.'], 404);
-            }
             return response()->json($subject);
-        }
-        catch (ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             Log::warning("[SubjectController] Subject not found: {$e->getMessage()}");
 
             return response()->json(['message' => 'Subject not found.'], 404);
 
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['message' => 'Error retrieving subject', 'error' => $e->getMessage()], 500);
         }
     }
@@ -79,12 +74,10 @@ class SubjectController extends Controller
     public function update(SubjectRequest $request, string $id): JsonResponse
     {
         try {
-            $subject = $this->subjectService->getSubjectById($id);
-            if (!$subject) {
-                return response()->json(['message' => 'Subject not found.'], 404);
-            }
-            $updatedSubject = $this->subjectService->updateSubject($subject, $request->validated());
+            $updatedSubject = $this->subjectService->updateSubject((int)$id, $request->validated());
             return response()->json($updatedSubject);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Subject not found.'], 404);
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 return response()->json(['message' => 'Subject with this name already exists.'], 409);
@@ -101,12 +94,10 @@ class SubjectController extends Controller
     public function destroy(string $id): JsonResponse
     {
         try {
-            $subject = $this->subjectService->getSubjectById($id);
-            if (!$subject) {
-                return response()->json(['message' => 'Subject not found.'], 404);
-            }
-            $this->subjectService->deleteSubject($subject);
+            $this->subjectService->deleteSubject((int)$id);
             return response()->json(['message' => 'Subject deleted successfully.'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Subject not found.'], 404);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error deleting subject', 'error' => $e->getMessage()], 500);
         }

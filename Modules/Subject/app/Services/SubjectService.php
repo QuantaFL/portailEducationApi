@@ -8,7 +8,7 @@ use Modules\Subject\Models\Subject;
 
 class SubjectService
 {
-    public function createSubject(array $data)
+    public function createSubject(array $data): Subject
     {
         Log::info('Attempting to create a new subject.', ['data' => $data]);
         try {
@@ -21,12 +21,12 @@ class SubjectService
         }
     }
 
-    public function updateSubject(int $id, array $data)
+    public function updateSubject(int $id, array $data): Subject
     {
         Log::info('Attempting to update subject.', ['subject_id' => $id, 'data' => $data]);
         try {
             $subject = Subject::findOrFail($id);
-            Subject::Update([
+            $subject->update([
                 "name"=>$data['name'],
                 "level"=>$data['level'],
                 "coefficient"=>$data['coefficient']
@@ -34,25 +34,24 @@ class SubjectService
             Log::info('Subject updated successfully.', ['subject_id' => $subject->id]);
             return $subject;
         } catch (\Exception $e) {
-            Log::error('Error updating subject.', ['error' => $e->getMessage(), 'subject_id' => $subject->id, 'data' => $data]);
+            Log::error('Error updating subject.', ['error' => $e->getMessage(), 'subject_id' => $id, 'data' => $data]);
             throw $e;
         }
     }
 
-    public function deleteSubject(Subject $id)
+    public function deleteSubject(int $id): bool
     {
         Log::info('Attempting to delete subject.', ['subject_id' =>$id]);
         try {
-            Subject::destroy($id);
-            Log::info('Subject deleted successfully.', ['subject_id' => $id]);
-            return true;
+            $subject = Subject::findOrFail($id);
+            return $subject->delete();
         } catch (\Exception $e) {
             Log::error('Error deleting subject.', ['error' => $e->getMessage(), 'subject_id' => $id]);
             throw $e;
         }
     }
 
-    public function listSubjects()
+    public function listSubjects(): \Illuminate\Database\Eloquent\Collection|array
     {
         Log::info('Attempting to list all subjects.');
         try {
@@ -65,19 +64,12 @@ class SubjectService
         }
     }
 
-    public function getSubjectById(int $id)
+    public function getSubjectById(int $id): Subject
     {
         Log::info('Attempting to retrieve subject by ID.', ['subject_id' => $id]);
         try {
             $subject = Subject::findOrFail($id);
-            if (!$subject) {
-                throw new ModelNotFoundException("Subject with ID {$id} not found.");
-            }
-            if ($subject) {
-                Log::info('Subject retrieved successfully.', ['subject_id' => $id]);
-            } else {
-                Log::warning('Subject not found.', ['subject_id' => $id]);
-            }
+            Log::info('Subject retrieved successfully.', ['subject_id' => $id]);
             return $subject;
         }
 
