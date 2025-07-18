@@ -8,7 +8,10 @@ use Modules\Etudiant\Http\Requests\EtudiantRequest;
 use Modules\Etudiant\Http\Requests\UpdateEtudiantRequest;
 use Modules\Etudiant\Services\EtudiantService;
 use Modules\Etudiant\Exceptions\EtudiantException;
+use Modules\Etudiant\Exceptions\EtudiantConflictException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class EtudiantController extends Controller
 {
@@ -41,11 +44,39 @@ class EtudiantController extends Controller
     {
         try {
             $etudiant = $this->etudiantService->createEtudiant($request->validated());
-            return response()->json($etudiant, 201);
+            return response()->json(['status' => 'success', 'data' => $etudiant, 'code' => 201], 201);
+        } catch (ValidationException $e) {
+            Log::warning('Etudiant creation validation failed.', ['errors' => $e->errors()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+                'code' => 400
+            ], 400);
+        } catch (EtudiantConflictException $e) {
+            Log::warning('Etudiant creation conflict.', ['message' => $e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'errors' => [],
+                'code' => 409
+            ], 409);
         } catch (EtudiantException $e) {
-            return response()->json(['message' => $e->getMessage()], 500);
+            Log::error('Error creating etudiant: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'errors' => [],
+                'code' => 500
+            ], 500);
         } catch (\Throwable $e) {
-            return response()->json(['message' => 'An unexpected error occurred.'], 500);
+            Log::error('An unexpected error occurred during etudiant creation: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An unexpected error occurred.',
+                'errors' => [],
+                'code' => 500
+            ], 500);
         }
     }
 
