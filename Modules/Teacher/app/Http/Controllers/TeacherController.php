@@ -8,7 +8,10 @@ use Modules\Teacher\app\services\TeacherService;
 use Modules\Teacher\Http\Requests\StoreTeacherRequest;
 use Modules\Teacher\Http\Requests\UpdateTeacherRequest;
 use Modules\Teacher\Exceptions\TeacherException;
+use Modules\Teacher\Exceptions\TeacherConflictException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class TeacherController extends Controller
 {
@@ -41,14 +44,39 @@ class TeacherController extends Controller
     {
         try {
             $teacher = $this->teacherService->createTeacher($request->validated());
-            return response()->json($teacher, 201);
+            return response()->json(['status' => 'success', 'data' => $teacher, 'code' => 201], 201);
+        } catch (ValidationException $e) {
+            Log::warning('Teacher creation validation failed.', ['errors' => $e->errors()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Validation failed.',
+                'errors' => $e->errors(),
+                'code' => 400
+            ], 400);
+        } catch (TeacherConflictException $e) {
+            Log::warning('Teacher creation conflict.', ['message' => $e->getMessage()]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'errors' => [],
+                'code' => 409
+            ], 409);
         } catch (TeacherException $e) {
-            if ($e->getMessage() === 'Email or phone already exists.') {
-                return response()->json(['message' => $e->getMessage()], 409);
-            }
-            return response()->json(['message' => $e->getMessage()], 500);
+            Log::error('Error creating teacher: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'errors' => [],
+                'code' => 500
+            ], 500);
         } catch (\Throwable $e) {
-            return response()->json(['message' => 'An unexpected error occurred.'], 500);
+            Log::error('An unexpected error occurred during teacher creation: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An unexpected error occurred.',
+                'errors' => [],
+                'code' => 500
+            ], 500);
         }
     }
 
