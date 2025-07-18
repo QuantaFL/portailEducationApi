@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Log;
 use Modules\Auth\Models\User;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\JWTAuth;
+use Modules\Auth\Exceptions\AuthenticationException;
+use Modules\Auth\Exceptions\RegistrationException;
 
 class AuthService
 {
@@ -15,24 +17,17 @@ class AuthService
     public function __construct()
     {
     }
-    public function register(array $data): array
+    public function register(array $data): User
     {
         try {
             Log::info('Register attempt', $data);
 
             $user = User::create($data);
 
-            return [
-                'success' => true,
-                'message' => 'Utilisateur enregistré avec succès.',
-                'user'    => $user,
-            ];
+            return $user;
         } catch (\Throwable $e) {
             Log::error('Register failed', ['error' => $e->getMessage()]);
-            return [
-                'success' => false,
-                'message' => 'Erreur lors de l’enregistrement.',
-            ];
+            throw new RegistrationException('Erreur lors de l’enregistrement.', 0, $e);
         }
     }
     public function login(array $credentials): array
@@ -43,10 +38,7 @@ class AuthService
             $user = User::where('email', $credentials['email'])->first();
 
             if (!$user || !Hash::check($credentials['password'], $user->password)) {
-                return [
-                    'success' => false,
-                    'message' => 'Identifiants invalides.',
-                ];
+                throw new AuthenticationException('Identifiants invalides.');
             }
 
             $jwt = app(JWTAuth::class);
@@ -55,17 +47,12 @@ class AuthService
 
 
             return [
-                'success' => true,
-                'message' => 'Connexion réussie.',
                 'token'   => $token,
                 'user'    => $user,
             ];
         } catch (\Throwable $e) {
             Log::error('Login failed', ['error' => $e->getMessage()]);
-            return [
-                'success' => false,
-                'message' => 'Erreur lors de la connexion.',
-            ];
+            throw new AuthenticationException('Erreur lors de la connexion.', 0, $e);
         }
     }
 
