@@ -22,7 +22,7 @@ class AuthController extends Controller
     {
         try {
             $user = $this->authService->register($request->validated());
-            return response()->json($user, 201);
+            return response()->json(['status' => 'success', 'data' => $user], 201);
         } catch (RegistrationException $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         } catch (\Throwable $e) {
@@ -35,7 +35,7 @@ class AuthController extends Controller
         try {
             $credentials = $request->only('email', 'password');
             $result = $this->authService->login($credentials);
-            return response()->json($result, 200);
+            return response()->json(['status' => 'success', 'data' => $result], 200);
         } catch (AuthenticationException $e) {
             return response()->json(['message' => $e->getMessage()], 401);
         } catch (\Throwable $e) {
@@ -46,7 +46,7 @@ class AuthController extends Controller
     public function me()
     {
         $user = auth()->user();
-        return response()->json($user);
+        return response()->json(['status' => 'success', 'data' => $user]);
     }
 
     /**
