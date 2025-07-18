@@ -4,17 +4,29 @@ namespace Modules\Auth\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Modules\Auth\Services\RoleService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class RoleController extends Controller
 {
+    protected $roleService;
+
+    public function __construct(RoleService $roleService)
+    {
+        $this->roleService = $roleService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-
-        return response()->json([]);
+        try {
+            $roles = $this->roleService->getAllRoles();
+            return response()->json($roles);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error fetching roles', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -22,9 +34,12 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //
-
-        return response()->json([]);
+        try {
+            $role = $this->roleService->createRole($request->all());
+            return response()->json($role, 201);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error creating role', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -32,9 +47,14 @@ class RoleController extends Controller
      */
     public function show($id)
     {
-        //
-
-        return response()->json([]);
+        try {
+            $role = $this->roleService->getRoleById($id);
+            return response()->json($role);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Role not found'], 404);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error fetching role', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -42,9 +62,14 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-
-        return response()->json([]);
+        try {
+            $role = $this->roleService->updateRole($id, $request->all());
+            return response()->json($role);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Role not found'], 404);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error updating role', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -52,8 +77,13 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        //
-
-        return response()->json([]);
+        try {
+            $this->roleService->deleteRole($id);
+            return response()->json(null, 204);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Role not found'], 404);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'Error deleting role', 'error' => $e->getMessage()], 500);
+        }
     }
 }
