@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Modules\Teacher\app\services\TeacherService;
 use Modules\Teacher\Http\Requests\StoreTeacherRequest;
 use Modules\Teacher\Http\Requests\UpdateTeacherRequest;
+use Modules\Teacher\Exceptions\TeacherException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TeacherController extends Controller
 {
@@ -22,12 +24,14 @@ class TeacherController extends Controller
      */
     public function index()
     {
-        //
-        $result = $this->teacherService->getAllTeacher();
-        if ($result['status'] === 'success') {
-            return response()->json($result['teachers']);
+        try {
+            $teachers = $this->teacherService->getAllTeacher();
+            return response()->json($teachers);
+        } catch (TeacherException $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
-        return response()->json(['message' => $result['message']], 500);
     }
 
     /**
@@ -35,15 +39,17 @@ class TeacherController extends Controller
      */
     public function store(StoreTeacherRequest $request)
     {
-        $result = $this->teacherService->createTeacher($request->validated());
-
-        if ($result['status'] === 'success') {
-            return response()->json($result['teacher'], 201);
-        } elseif ($result['status'] === 'conflict') {
-            return response()->json(['message' => $result['message']], 409);
+        try {
+            $teacher = $this->teacherService->createTeacher($request->validated());
+            return response()->json($teacher, 201);
+        } catch (TeacherException $e) {
+            if ($e->getMessage() === 'Email or phone already exists.') {
+                return response()->json(['message' => $e->getMessage()], 409);
+            }
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
-        return response()->json(['message' => $result['message']], 500);
-
     }
 
     /**
@@ -51,15 +57,16 @@ class TeacherController extends Controller
      */
     public function show($id)
     {
-        $result = $this->teacherService->getTeacher($id);
-
-        if ($result['status'] === 'success') {
-            return response()->json($result['teacher'], 200);
-        } elseif ($result['status'] === 'not_found') {
-            return response()->json(['message' => $result['message']], 404);
+        try {
+            $teacher = $this->teacherService->getTeacher($id);
+            return response()->json($teacher);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Teacher not found.'], 404);
+        } catch (TeacherException $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
-        return response()->json(['message' => $result['message']], 500);
-
     }
 
     /**
@@ -67,17 +74,19 @@ class TeacherController extends Controller
      */
     public function update(UpdateTeacherRequest $request, $id)
     {
-        $result = $this->teacherService->updateTeacher($id, $request->validated());
-
-        if ($result['status'] === 'success') {
-            return response()->json($result['teacher'], 200);
-        } elseif ($result['status'] === 'not_found') {
-            return response()->json(['message' => $result['message']], 404);
-        } elseif ($result['status'] === 'conflict') {
-            return response()->json(['message' => $result['message']], 409);
+        try {
+            $teacher = $this->teacherService->updateTeacher($id, $request->validated());
+            return response()->json($teacher);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Teacher not found.'], 404);
+        } catch (TeacherException $e) {
+            if ($e->getMessage() === 'Email or phone already exists.') {
+                return response()->json(['message' => $e->getMessage()], 409);
+            }
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
-        return response()->json(['message' => $result['message']], 500);
-
     }
 
     /**
@@ -85,14 +94,15 @@ class TeacherController extends Controller
      */
     public function destroy($id)
     {
-        $result = $this->teacherService->deleteTeacher($id);
-
-        if ($result['status'] === 'success') {
-            return response()->json(['message' => $result['message']], 200);
-        } elseif ($result['status'] === 'not_found') {
-            return response()->json(['message' => $result['message']], 404);
+        try {
+            $this->teacherService->deleteTeacher($id);
+            return response()->json(['message' => 'Teacher deleted successfully.'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Teacher not found.'], 404);
+        } catch (TeacherException $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
-        return response()->json(['message' => $result['message']], 500);
-
     }
 }

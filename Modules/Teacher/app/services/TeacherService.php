@@ -6,22 +6,22 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Auth\Models\User;
 use Modules\Teacher\Models\Teacher;
+use Modules\Teacher\Exceptions\TeacherException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TeacherService
 {
     public function getAllTeacher()
     {
         try {
-         $teachers =    Teacher::all();
-            Log::info("Teacher  successfully  retrieve ");
-            return ['status' => 'success', 'teachers' => $teachers];
-        }catch (\Exception $e) {
-            Log::error("Error creating teacher: " . $e->getMessage(), ['exception' => $e]);
-            return ['status' => 'error', 'message' => 'Failed to get all teachers.'];
+            return Teacher::all();
+        } catch (\Throwable $e) {
+            Log::error("Error fetching all teachers: " . $e->getMessage(), ['exception' => $e]);
+            throw new TeacherException('Failed to get all teachers.', 0, $e);
         }
-
     }
-    public function createTeacher(array $data)
+
+    public function createTeacher(array $data): Teacher
     {
         DB::beginTransaction();
         try {
@@ -32,7 +32,7 @@ class TeacherService
 
             if ($existingUser) {
                 Log::warning("Teacher creation conflict: Email or phone already exists.", ['email' => $data['email'], 'phone' => $data['phone']]);
-                return ['status' => 'conflict', 'message' => 'Email or phone already exists.'];
+                throw new TeacherException('Email or phone already exists.');
             }
 
             $user = User::create([
@@ -54,45 +54,36 @@ class TeacherService
 
             DB::commit();
             Log::info("Teacher created successfully.", ['teacher_id' => $teacher->id, 'user_id' => $user->id]);
-            return ['status' => 'success', 'teacher' => $teacher->load(['user', 'user.role'])];
-        } catch (\Exception $e) {
+            return $teacher->load(['user', 'user.role']);
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Error creating teacher: " . $e->getMessage(), ['exception' => $e]);
-            return ['status' => 'error', 'message' => 'Failed to create teacher.'];
+            throw new TeacherException('Failed to create teacher.', 0, $e);
         }
     }
 
-    public function getTeacher(int $id)
+    public function getTeacher(int $id): Teacher
     {
         try {
-            $teacher = Teacher::with(['user', 'user.role'])->find($id);
-            if (!$teacher) {
-                Log::warning("Teacher not found.", ['teacher_id' => $id]);
-                return ['status' => 'not_found', 'message' => 'Teacher not found.'];
-            }
+            $teacher = Teacher::with(['user', 'user.role'])->findOrFail($id);
             Log::info("Teacher fetched successfully.", ['teacher_id' => $id]);
-            return ['status' => 'success', 'teacher' => $teacher];
-        } catch (\Exception $e) {
+            return $teacher;
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Teacher not found.", ['teacher_id' => $id]);
+            throw new TeacherException('Teacher not found.', 0, $e);
+        } catch (\Throwable $e) {
             Log::error("Error fetching teacher: " . $e->getMessage(), ['exception' => $e]);
-            return ['status' => 'error', 'message' => 'Failed to fetch teacher.'];
+            throw new TeacherException('Failed to fetch teacher.', 0, $e);
         }
     }
 
-    public function updateTeacher(int $id, array $data)
+    public function updateTeacher(int $id, array $data): Teacher
     {
         DB::beginTransaction();
         try {
             $teacher = Teacher::findOrFail($id);
-            if (!$teacher) {
-                Log::warning("Teacher not found for update.", ['teacher_id' => $id]);
-                return ['status' => 'not_found', 'message' => 'Teacher not found.'];
-            }
 
             $user = $teacher->user;
-            if (!$user) {
-                Log::warning("User associated with teacher not found for update.", ['teacher_id' => $id]);
-                return ['status' => 'not_found', 'message' => 'User associated with teacher not found.'];
-            }
 
             // Check for existing user with the same email or phone, excluding the current user
             $existingUser = User::where(function ($query) use ($data) {
@@ -104,7 +95,7 @@ class TeacherService
 
             if ($existingUser) {
                 Log::warning("Teacher update conflict: Email or phone already exists.", ['email' => $data['email'], 'phone' => $data['phone']]);
-                return ['status' => 'conflict', 'message' => 'Email or phone already exists.'];
+                throw new TeacherException('Email or phone already exists.');
             }
 
             $user->update([
@@ -123,23 +114,22 @@ class TeacherService
 
             DB::commit();
             Log::info("Teacher updated successfully.", ['teacher_id' => $id, 'user_id' => $user->id]);
-            return ['status' => 'success', 'teacher' => $teacher->load(['user', 'user.role'])];
-        } catch (\Exception $e) {
+            return $teacher->load(['user', 'user.role']);
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Teacher not found for update.", ['teacher_id' => $id]);
+            throw new TeacherException('Teacher not found.', 0, $e);
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Error updating teacher: " . $e->getMessage(), ['exception' => $e]);
-            return ['status' => 'error', 'message' => 'Failed to update teacher.'];
+            throw new TeacherException('Failed to update teacher.', 0, $e);
         }
     }
 
-    public function deleteTeacher(int $id)
+    public function deleteTeacher(int $id): bool
     {
         DB::beginTransaction();
         try {
             $teacher = Teacher::findOrFail($id);
-            if (!$teacher) {
-                Log::warning("Teacher not found for deletion.", ['teacher_id' => $id]);
-                return ['status' => 'not_found', 'message' => 'Teacher not found.'];
-            }
 
             $user = $teacher->user;
             if ($user) {
@@ -150,12 +140,14 @@ class TeacherService
 
             DB::commit();
             Log::info("Teacher deleted successfully.", ['teacher_id' => $id]);
-            return ['status' => 'success', 'message' => 'Teacher deleted successfully.'];
-        } catch (\Exception $e) {
+            return true;
+        } catch (ModelNotFoundException $e) {
+            Log::warning("Teacher not found for deletion.", ['teacher_id' => $id]);
+            throw new TeacherException('Teacher not found.', 0, $e);
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Error deleting teacher: " . $e->getMessage(), ['exception' => $e]);
-            return ['status' => 'error', 'message' => 'Failed to delete teacher.'];
+            throw new TeacherException('Failed to delete teacher.', 0, $e);
         }
     }
-
 }
