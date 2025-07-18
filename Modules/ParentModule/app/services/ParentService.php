@@ -36,7 +36,7 @@ class ParentService
                 'email' => $data['email'],
                 'phone' => $data['phone'] ?? null,
                 'password' => Hash::make('password'),
-                'role_id' => 4, // Parent role ID
+                'role_id' => $data['role_id'],
                 'address' => $data['address'] ?? null,
                 'date_of_birth' => $data['date_of_birth'] ?? null,
                 'gender' => $data['gender'] ?? null,
