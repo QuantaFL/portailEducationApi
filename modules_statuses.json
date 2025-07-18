@@ -2,5 +2,8 @@
     "Auth": true,
     "AnneAcademique": true,
     "Etudiant": true,
-    "Classes": true
+    "Classes": true,
+    "Subject": true,
+    "Teacher": true,
+    "TeacherSubjectClass": true
 }
