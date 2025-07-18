@@ -21,6 +21,7 @@ class StoreTeacherRequest extends FormRequest
             'date_of_birth' => 'nullable|date',
             'gender' => 'nullable|string|in:Male,Female,Other',
             'hire_date' => 'required|date',
+            'role_id' => 'required|exists:roles,id'
         ];
 
     }
