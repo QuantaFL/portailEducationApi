@@ -9,6 +9,7 @@ use Modules\TeacherSubjectClass\app\Http\Requests\TeacherSubjectClassRequest;
 use Modules\TeacherSubjectClass\app\services\TeacherSubjectClassService;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class TeacherSubjectClassController extends Controller
 {
@@ -27,7 +28,7 @@ class TeacherSubjectClassController extends Controller
         try {
             $associations = $this->teacherSubjectClassService->getAllTeacherSubjectClasses();
             return response()->json($associations);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json(['message' => 'Error retrieving associations', 'error' => $e->getMessage()], 500);
         }
     }
@@ -45,7 +46,9 @@ class TeacherSubjectClassController extends Controller
             return response()->json(['message' => $e->getMessage()], 409);
         } catch (NotFoundHttpException $e) {
             return response()->json(['message' => $e->getMessage()], 404);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Related entity not found.'], 404);
+        } catch (\Throwable $e) {
             return response()->json(['message' => 'Error creating association', 'error' => $e->getMessage()], 500);
         }
     }
@@ -60,7 +63,9 @@ class TeacherSubjectClassController extends Controller
             return response()->json($association);
         } catch (NotFoundHttpException $e) {
             return response()->json(['message' => $e->getMessage()], 404);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Association not found.'], 404);
+        } catch (\Throwable $e) {
             return response()->json(['message' => 'Error retrieving association', 'error' => $e->getMessage()], 500);
         }
     }
@@ -78,7 +83,9 @@ class TeacherSubjectClassController extends Controller
             return response()->json(['message' => $e->getMessage()], 404);
         } catch (ConflictHttpException $e) {
             return response()->json(['message' => $e->getMessage()], 409);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Related entity not found.'], 404);
+        } catch (\Throwable $e) {
             return response()->json(['message' => 'Error updating association', 'error' => $e->getMessage()], 500);
         }
     }
@@ -93,7 +100,9 @@ class TeacherSubjectClassController extends Controller
             return response()->json(null, 204);
         } catch (NotFoundHttpException $e) {
             return response()->json(['message' => $e->getMessage()], 404);
-        } catch (\Exception $e) {
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Association not found.'], 404);
+        } catch (\Throwable $e) {
             return response()->json(['message' => 'Error deleting association', 'error' => $e->getMessage()], 500);
         }
     }
