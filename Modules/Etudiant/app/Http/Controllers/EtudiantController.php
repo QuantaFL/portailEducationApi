@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Modules\Etudiant\Http\Requests\EtudiantRequest;
 use Modules\Etudiant\Http\Requests\UpdateEtudiantRequest;
 use Modules\Etudiant\Services\EtudiantService;
+use Modules\Etudiant\Exceptions\EtudiantException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EtudiantController extends Controller
 {
@@ -25,8 +27,10 @@ class EtudiantController extends Controller
         try {
             $etudiants = $this->etudiantService->getAllEtudiants();
             return response()->json($etudiants);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error fetching students', 'error' => $e->getMessage()], 500);
+        } catch (EtudiantException $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
     }
 
@@ -38,8 +42,10 @@ class EtudiantController extends Controller
         try {
             $etudiant = $this->etudiantService->createEtudiant($request->validated());
             return response()->json($etudiant, 201);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error creating student', 'error' => $e->getMessage()], 500);
+        } catch (EtudiantException $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
     }
 
@@ -50,12 +56,13 @@ class EtudiantController extends Controller
     {
         try {
             $etudiant = $this->etudiantService->getEtudiantById($id);
-            if (!$etudiant) {
-                return response()->json(['message' => 'Student not found'], 404);
-            }
             return response()->json($etudiant);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error fetching student', 'error' => $e->getMessage()], 500);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Student not found'], 404);
+        } catch (EtudiantException $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
     }
 
@@ -66,12 +73,13 @@ class EtudiantController extends Controller
     {
         try {
             $etudiant = $this->etudiantService->updateEtudiant($id, $request->validated());
-            if (!$etudiant) {
-                return response()->json(['message' => 'Student not found'], 404);
-            }
             return response()->json($etudiant);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error updating student', 'error' => $e->getMessage()], 500);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Student not found'], 404);
+        } catch (EtudiantException $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
     }
 
@@ -81,13 +89,14 @@ class EtudiantController extends Controller
     public function destroy($id)
     {
         try {
-            $deleted = $this->etudiantService->deleteEtudiant($id);
-            if (!$deleted) {
-                return response()->json(['message' => 'Student not found'], 404);
-            }
-            return response()->json(['message' => 'Student deleted successfully']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error deleting student', 'error' => $e->getMessage()], 500);
+            $this->etudiantService->deleteEtudiant($id);
+            return response()->json(['message' => 'Student deleted successfully'], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['message' => 'Student not found'], 404);
+        } catch (EtudiantException $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        } catch (\Throwable $e) {
+            return response()->json(['message' => 'An unexpected error occurred.'], 500);
         }
     }
 }
