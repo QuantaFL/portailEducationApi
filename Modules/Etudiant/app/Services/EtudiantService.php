@@ -5,6 +5,7 @@ namespace Modules\Etudiant\Services;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Modules\Auth\Models\User;
+use Modules\Etudiant\Exceptions\EtudiantConflictException;
 use Modules\Etudiant\Models\Etudiant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -34,9 +35,29 @@ class EtudiantService
 
     public function createEtudiant(array $data)
     {
-
-
+        Log::info('Starting student creation process.', ['email' => $data['email']]);
         try {
+            $query = User::where('email', $data['email']);
+
+            if (!empty($data['phone'])) {
+                $query->orWhere('phone', $data['phone']);
+            }
+
+            $existingUser = $query->first();
+
+            if ($existingUser) {
+                Log::warning('Student creation conflict: Email or phone already exists.', ['email' => $data['email'], 'phone' => $data['phone']]);
+                throw new EtudiantConflictException('Email or phone number already taken.');
+            }
+
+            // Check for existing tutor phone number
+            if (isset($data['tutor_phone_number'])) {
+                $existingTutorPhone = Etudiant::where('tutor_phone_number', $data['tutor_phone_number'])->first();
+                if ($existingTutorPhone) {
+                    Log::warning('Student creation conflict: Tutor phone number already exists.', ['tutor_phone_number' => $data['tutor_phone_number']]);
+                    throw new EtudiantConflictException('Tutor phone number already taken.');
+                }
+            }
 
             return DB::transaction(function () use ($data) {
                 $user = User::create([
@@ -53,7 +74,7 @@ class EtudiantService
                 $nextId = Etudiant::max('id') + 1;
                 $year = now()->year;
                 $matricule = "ETD-{$year}-{$nextId}";
-                return Etudiant::create([
+                $etudiant = Etudiant::create([
                     'user_id' => $user->id,
                     'enrollment_date' => $data['enrollment_date'],
                     'class_id' => $data['class_id'],
@@ -61,7 +82,11 @@ class EtudiantService
                     'student_id_number' => $matricule,
                     'tutor_phone_number'=>$data['tutor_phone_number']
                 ]);
+                Log::info('Student created successfully.', ['etudiant_id' => $etudiant->id, 'user_id' => $user->id]);
+                return $etudiant;
             });
+        } catch (EtudiantConflictException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::error('Error creating student: ' . $e->getMessage());
             throw new EtudiantException('Error creating student.', 0, $e);
