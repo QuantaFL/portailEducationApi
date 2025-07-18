@@ -3,8 +3,10 @@
 namespace Modules\Teacher\app\services;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Modules\Auth\Models\User;
+use Modules\Teacher\Exceptions\TeacherConflictException;
 use Modules\Teacher\Models\Teacher;
 use Modules\Teacher\Exceptions\TeacherException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -23,24 +25,25 @@ class TeacherService
 
     public function createTeacher(array $data): Teacher
     {
+        Log::info('Starting teacher creation process.', ['email' => $data['email']]);
         DB::beginTransaction();
         try {
             // Check for existing user with the same email or phone
             $existingUser = User::where('email', $data['email'])
-                ->orWhere('phone', $data['phone'])
+                ->orWhere('phone', $data['phone'] ?? null)
                 ->first();
 
             if ($existingUser) {
-                Log::warning("Teacher creation conflict: Email or phone already exists.", ['email' => $data['email'], 'phone' => $data['phone']]);
-                throw new TeacherException('Email or phone already exists.');
+                Log::warning('Teacher creation conflict: Email or phone already exists.', ['email' => $data['email'], 'phone' => $data['phone']]);
+                throw new TeacherConflictException('Email or phone number already taken.');
             }
 
             $user = User::create([
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
                 'email' => $data['email'],
-                'phone' => $data['phone'],
-                'password' => bcrypt('password'),
+                'phone' => $data['phone'] ?? null,
+                'password' => Hash::make('password'),
                 'role_id' => 2, // Teacher role ID
                 'address' => $data['address'] ?? null,
                 'date_of_birth' => $data['date_of_birth'] ?? null,
@@ -53,8 +56,11 @@ class TeacherService
             ]);
 
             DB::commit();
-            Log::info("Teacher created successfully.", ['teacher_id' => $teacher->id, 'user_id' => $user->id]);
+            Log::info('Teacher created successfully.', ['teacher_id' => $teacher->id, 'user_id' => $user->id]);
             return $teacher->load(['user', 'user.role']);
+        } catch (TeacherConflictException $e) {
+            DB::rollBack();
+            throw $e;
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error("Error creating teacher: " . $e->getMessage(), ['exception' => $e]);
