@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Parent\Exceptions;
+namespace Modules\ParentModule\Exceptions;
 
 use Exception;
 

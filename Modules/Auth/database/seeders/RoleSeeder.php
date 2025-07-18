@@ -16,7 +16,7 @@ class RoleSeeder extends Seeder
             ['code_role' => 'admin', 'libelle_role' => 'Administrateur'],
             ['code_role' => 'enseignant', 'libelle_role' => 'Enseignant'],
             ['code_role' => 'eleve', 'libelle_role' => 'Élève'],
-            ['code_role' => 'parent', 'libelle_role' => 'Parent'],
+            ['code_role' => 'parent', 'libelle_role' => 'ParentModule'],
         ];
 
         foreach ($roles as $role) {

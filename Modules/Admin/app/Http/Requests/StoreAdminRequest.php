@@ -20,7 +20,7 @@ class StoreAdminRequest extends FormRequest
             'address' => 'nullable|string|max:255',
             'date_of_birth' => 'nullable|date',
             'gender' => 'nullable|string|in:Male,Female,Other',
-            'admin_code' => 'required|string|unique:admins,admin_code',
+           // 'admin_code' => 'required|string|unique:admins,admin_code',
         ];
     }
 

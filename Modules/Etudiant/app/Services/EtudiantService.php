@@ -34,29 +34,32 @@ class EtudiantService
 
     public function createEtudiant(array $data)
     {
+
+
         try {
-            $year = date('Y');
-            $random = strtoupper(substr(uniqid(), -5));
-            $studentIdNumber = "MAT-{$year}-{$random}";
+
             return DB::transaction(function () use ($data) {
                 $user = User::create([
-                    'first_name' => $data['firstName'],
-                    'last_name' => $data['lastName'],
+                    'first_name' => $data['first_name'],
+                    'last_name' => $data['last_name'],
                     'email' => $data['email'],
                     'phone' => $data['phone'] ?? null,
                     'password' => Hash::make('password'),
-                    'role_id' => $data['roleId'],
+                    'role_id' => $data['role_id'],
                     'address' => $data['address'] ?? null,
-                    'date_of_birth' => $data['dateOfBirth'] ?? null,
+                    'date_of_birth' => $data['date_of_birth'] ?? null,
                     'gender' => $data['gender'] ?? null,
                 ]);
-
+                $nextId = Etudiant::max('id') + 1;
+                $year = now()->year;
+                $matricule = "ETD-{$year}-{$nextId}";
                 return Etudiant::create([
                     'user_id' => $user->id,
-                    'enrollment_date' => $data['enrollmentDate'],
-                    'class_id' => $data['classId'],
-                    'parent_user_id' => $data['parentUserId'] ?? null,
-                    'student_id_number' => 'ETU-' . Str::uuid()->toString()
+                    'enrollment_date' => $data['enrollment_date'],
+                    'class_id' => $data['class_id'],
+                    'parent_user_id' => $data['parent_user_id'] ?? null,
+                    'student_id_number' => $matricule,
+                    'tutor_phone_number'=>$data['tutor_phone_number']
                 ]);
             });
         } catch (\Throwable $e) {

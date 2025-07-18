@@ -26,10 +26,12 @@ class AdminService
                 'date_of_birth' => $data['date_of_birth'] ?? null,
                 'gender' => $data['gender'] ?? null,
             ]);
-
+            $nextId = Admin::max('id') + 1;
+            $year = now()->year;
+            $matricule = "ADM-{$year}-{$nextId}";
             $admin = Admin::create([
                 'user_id' => $user->id,
-                'admin_code' => $data['admin_code'],
+                'admin_code' => $matricule,
             ]);
 
             DB::commit();

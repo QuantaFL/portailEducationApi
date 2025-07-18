@@ -21,7 +21,7 @@ class Etudiant extends Model
 
     public function classes()
     {
-        return $this->belongsTo(Classes::class,'class_id');
+        return $this->belongsTo(Classes::class);
     }
 
     public function parent()

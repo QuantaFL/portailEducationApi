@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Parent\Providers;
+namespace Modules\ParentModule\Providers;
 
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -12,7 +12,7 @@ class ParentServiceProvider extends ServiceProvider
 {
     use PathNamespace;
 
-    protected string $name = 'Parent';
+    protected string $name = 'ParentModule';
 
     protected string $nameLower = 'parent';
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace Modules\Parent\Http\Controllers;
+namespace Modules\ParentModule\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Modules\Parent\app\services\ParentService;
-use Modules\Parent\Http\Requests\StoreParentRequest;
-use Modules\Parent\Exceptions\ParentException;
+use Modules\ParentModule\app\services\ParentService;
+use Modules\ParentModule\Http\Requests\StoreParentRequest;
+use Modules\ParentModule\Exceptions\ParentException;
 
 class ParentController extends Controller
 {

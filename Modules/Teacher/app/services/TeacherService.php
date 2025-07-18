@@ -36,20 +36,20 @@ class TeacherService
             }
 
             $user = User::create([
-                'first_name' => $data['firstName'],
-                'last_name' => $data['lastName'],
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
                 'email' => $data['email'],
                 'phone' => $data['phone'],
                 'password' => bcrypt('password'),
                 'role_id' => 2, // Teacher role ID
                 'address' => $data['address'] ?? null,
-                'date_of_birth' => $data['dateOfBirth'] ?? null,
+                'date_of_birth' => $data['date_of_birth'] ?? null,
                 'gender' => $data['gender'] ?? null,
             ]);
 
             $teacher = Teacher::create([
                 'user_id' => $user->id,
-                'hire_date' => $data['hireDate'],
+                'hire_date' => $data['hire_date'],
             ]);
 
             DB::commit();

@@ -5,5 +5,7 @@
     "Classes": true,
     "Subject": true,
     "Teacher": true,
-    "TeacherSubjectClass": true
+    "TeacherSubjectClass": true,
+    "Admin": true,
+    "ParentModule": true
 }

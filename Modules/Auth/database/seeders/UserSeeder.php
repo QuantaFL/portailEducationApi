@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             'admin' => 'Administrateur',
             'enseignant' => 'Enseignant',
             'eleve' => 'Élève',
-            'parent' => 'Parent',
+            'parent' => 'ParentModule',
         ];
 
         foreach ($roles as $code => $libelle) {

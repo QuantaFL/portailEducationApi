@@ -1,17 +1,17 @@
 <?php
 
-namespace Modules\Parent\app\services;
+namespace Modules\ParentModule\app\services;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Modules\Auth\Models\User;
-use Modules\Parent\Models\Parent as ParentModel;
-use Modules\Parent\Exceptions\ParentException;
+use Modules\ParentModule\Exceptions\ParentException;
+use Modules\ParentModule\Models\Parents;
 
 class ParentService
 {
-    public function createParent(array $data): ParentModel
+    public function createParent(array $data): Parents
     {
         DB::beginTransaction();
         try {
@@ -21,16 +21,20 @@ class ParentService
                 'email' => $data['email'],
                 'phone' => $data['phone'] ?? null,
                 'password' => Hash::make($data['password']),
-                'role_id' => 4, // Parent role ID
+                'role_id' => 4, // ParentModule role ID
                 'address' => $data['address'] ?? null,
                 'date_of_birth' => $data['date_of_birth'] ?? null,
                 'gender' => $data['gender'] ?? null,
             ]);
+            $nextId = \Modules\ParentModule\Models\Parents::max('id') + 1;
+            $year = now()->year;
+            $matricule = "PRT-{$year}-{$nextId}";
 
-            $parent = ParentModel::create([
+            $parent = Parents::create([
                 'user_id' => $user->id,
                 'student_id' => $data['student_id'],
                 'phone_number' => $data['phone_number'] ?? null,
+                'matricule'=>$matricule
             ]);
 
             DB::commit();

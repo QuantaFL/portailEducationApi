@@ -12,15 +12,15 @@ class StoreTeacherRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'firstName' => 'required|string|max:255',
-            'lastName' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255',
             'phone' => 'required|string|max:20',
-          //  'password' => 'required|string|min:8',
+          'password' => 'required|string|min:8',
             'address' => 'nullable|string|max:255',
-            'dateOfBirth' => 'nullable|date',
+            'date_of_birth' => 'nullable|date',
             'gender' => 'nullable|string|in:Male,Female,Other',
-            'hireDate' => 'required|date',
+            'hire_date' => 'required|date',
         ];
 
     }

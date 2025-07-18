@@ -1,21 +1,18 @@
 <?php
 
-namespace Modules\Parent\Models;
+namespace Modules\ParentModule\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Auth\Models\User;
 use Modules\Etudiant\Models\Etudiant;
 
-class Parent extends Model
+class Parents extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'student_id',
-        'phone_number',
-    ];
+
+    protected $guarded = [];
 
     public function user()
     {
