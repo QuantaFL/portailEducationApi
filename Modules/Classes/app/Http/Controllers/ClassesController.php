@@ -83,7 +83,9 @@ class ClassesController extends Controller
 
         try {
             $result = $this->classesService->createClasse($request);
-            return response()->json($result, 201);
+            return response()->json([
+                "data"=>$result
+            ],201);
         }
         catch (\Throwable $e) {
             Log::error($this->controllerName ."Erreur lors de la création d'une classe", [
