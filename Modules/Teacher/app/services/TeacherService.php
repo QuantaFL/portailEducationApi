@@ -44,7 +44,7 @@ class TeacherService
                 'email' => $data['email'],
                 'phone' => $data['phone'] ?? null,
                 'password' => Hash::make('password'),
-                'role_id' => 2, // Teacher role ID
+                'role_id' => $data['role_id'],
                 'address' => $data['address'] ?? null,
                 'date_of_birth' => $data['date_of_birth'] ?? null,
                 'gender' => $data['gender'] ?? null,
