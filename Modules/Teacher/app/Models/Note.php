@@ -19,7 +19,14 @@ class Note extends Model
         'teacher_id',
         'class_id',
         'period',
-        'value',
+        'note_exam',
+        'note_devoir',
+    ];
+    protected $with = [
+        'subject',
+        'etudiant',
+        'teacher',
+        'class',
     ];
 
     public function etudiant()

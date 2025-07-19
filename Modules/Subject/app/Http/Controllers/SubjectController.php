@@ -25,7 +25,9 @@ class SubjectController extends Controller
     {
         try {
             $subjects = $this->subjectService->listSubjects();
-            return response()->json($subjects);
+            return response()->json([
+                "data"=>$subjects
+            ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error listing subjects', 'error' => $e->getMessage()], 500);
         }
@@ -38,7 +40,9 @@ class SubjectController extends Controller
     {
         try {
             $subject = $this->subjectService->createSubject($request->validated());
-            return response()->json($subject, 201);
+            return response()->json([
+                "data"=>$subject
+            ],201);
         } catch (\Illuminate\Database\QueryException $e) {
             if ($e->getCode() === '23000') {
                 return response()->json(['message' => 'Subject with this name already exists.'], 409);
@@ -57,7 +61,9 @@ class SubjectController extends Controller
     {
         try {
             $subject = $this->subjectService->getSubjectById($id);
-            return response()->json($subject);
+            return response()->json([
+                "data"=>$subject
+            ]);
         } catch (ModelNotFoundException $e) {
             Log::warning("[SubjectController] Subject not found: {$e->getMessage()}");
 
@@ -75,7 +81,9 @@ class SubjectController extends Controller
     {
         try {
             $updatedSubject = $this->subjectService->updateSubject((int)$id, $request->validated());
-            return response()->json($updatedSubject);
+            return response()->json([
+                "data"=>$updatedSubject
+            ]);
         } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Subject not found.'], 404);
         } catch (\Illuminate\Database\QueryException $e) {

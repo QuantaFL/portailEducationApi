@@ -17,7 +17,8 @@ class StoreNoteRequest extends FormRequest
             'teacher_id' => 'required|exists:teachers,id',
             'class_id' => 'required|exists:classes,id',
             'period' => 'required|string',
-            'value' => 'required|numeric|min:0|max:20',
+            'note_exam' => 'nullable|numeric|min:0|max:20',
+            'note_devoir' => 'nullable|numeric|min:0|max:20',
         ];
     }
 

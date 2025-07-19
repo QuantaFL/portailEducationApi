@@ -18,7 +18,8 @@ return new class extends Migration
             $table->foreignId('teacher_id')->constrained('teachers')->onDelete('cascade');
             $table->foreignId('class_id')->constrained('classes')->onDelete('cascade');
             $table->string('period');
-            $table->decimal('value', 5, 2);
+            $table->decimal('note_exam', 5, 2)->nullable();
+            $table->decimal('note_devoir', 5, 2)->nullable();
             $table->timestamps();
         });
     }

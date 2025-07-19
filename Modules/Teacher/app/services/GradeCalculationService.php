@@ -30,14 +30,14 @@ class GradeCalculationService
         $rank = null; // Placeholder for now
 
         $reportCard = ReportCard::updateOrCreate(
-            ['etudiant_id' => $etudiantId, 'class_id' => $classId, 'period' => $period],
+            ['etudiant_id' => $etudiantId, 'class_id' => $classId, 'period' => $period], // search key
             [
                 'general_average' => $generalAverage,
                 'mention' => $mention,
                 'rank' => $rank,
                 'appreciation' => $appreciation,
                 'subject_averages' => $subjectAverages,
-            ]
+            ] // updated values
         );
 
         Log::info("Report card calculated and saved for student {$etudiantId}.", ['report_card_id' => $reportCard->id]);
@@ -51,7 +51,19 @@ class GradeCalculationService
         $notesBySubject = $notes->groupBy('subject_id');
 
         foreach ($notesBySubject as $subjectId => $subjectNotes) {
-            $average = $subjectNotes->avg('value');
+            $totalWeight = 0;
+            $weightedSum = 0;
+
+            foreach ($subjectNotes as $note) {
+                $note_exam = $note->note_exam ?? 0;
+                $note_devoir = $note->note_devoir ?? 0;
+
+                // Assuming exam has a weight of 2 and devoir a weight of 1
+                $weightedSum += ($note_exam * 2) + $note_devoir;
+                $totalWeight += 3; // 2 for exam, 1 for devoir
+            }
+
+            $average = ($totalWeight > 0) ? $weightedSum / $totalWeight : 0;
             $subjectAverages[$subjectId] = round($average, 2);
         }
 
@@ -68,6 +80,8 @@ class GradeCalculationService
 
     private function getMention(float $average): string
     {
+        if ($average >= 19) return 'la vraie excellence';
+        if ($average >= 17) return 'Excellent';
         if ($average >= 16) return 'Très bien';
         if ($average >= 14) return 'Bien';
         if ($average >= 12) return 'Assez bien';
@@ -77,6 +91,8 @@ class GradeCalculationService
 
     private function getAppreciation(float $average): string
     {
+        if ($average >= 19) return 'le meilleur des meilleurs';
+        if ($average >= 17) return 'En route pour l\'excellence et au delà,continuez ainsi';
         if ($average >= 16) return 'Excellent travail, continuez ainsi !';
         if ($average >= 14) return 'Très bon résultats, félicitations.';
         if ($average >= 12) return 'Bons résultats, avec quelques points à améliorer.';
@@ -95,7 +111,7 @@ class GradeCalculationService
 
         $rank = 1;
         $previousAverage = null;
-        foreach ($reportCards as $reportCard) {
+        foreach ($reportCards as $reportCard) { // work bcz reportCards was sorted by Desc btw the greasted AVG alaways be on the top of collection like that : 19,18,17,16,etc
             if ($previousAverage !== null && $reportCard->general_average < $previousAverage) {
                 $rank++;
             }
