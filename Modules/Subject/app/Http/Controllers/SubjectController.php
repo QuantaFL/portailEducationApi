@@ -26,7 +26,7 @@ class SubjectController extends Controller
         try {
             $subjects = $this->subjectService->listSubjects();
             return response()->json([
-                "data"=>$subjects
+                $subjects
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error listing subjects', 'error' => $e->getMessage()], 500);
