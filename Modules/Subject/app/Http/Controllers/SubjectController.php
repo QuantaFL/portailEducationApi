@@ -61,9 +61,9 @@ class SubjectController extends Controller
     {
         try {
             $subject = $this->subjectService->getSubjectById($id);
-            return response()->json([
-                "data"=>$subject
-            ]);
+            return response()->json(
+                $subject
+            );
         } catch (ModelNotFoundException $e) {
             Log::warning("[SubjectController] Subject not found: {$e->getMessage()}");
 
